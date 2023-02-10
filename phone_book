@@ -1,0 +1,105 @@
+#include <iostream>
+#include <string>
+#include <map>
+class Number {
+	std::string phone_num;
+public:
+	void write_num() {
+		std::string num;
+		tryAgain:
+		std::cout << "Input number(10 digits from 0 to 9 after +7; Example 9209860136): \n";
+		std::cin >> num;
+		if (num.length() < 10) {
+			std::cout << "The number of digits in the number is less than expected: \n";
+			goto tryAgain;
+		}
+		else if (num.length() > 10) {
+			std::cout << "More digits than allowed: \n";
+			goto tryAgain;
+		}
+		for (int i = 0; i < 10; ++i) {
+			if (num[i] < '0' || num[i] > '9') {
+				std::cout << "Incorrect number, please input this number again: \n";
+				goto tryAgain;
+			}
+		}		
+		phone_num = "+7";
+		phone_num += num;
+	}
+     std::string getNum() {
+		return phone_num;
+	}
+};
+class PhoneBook {
+public:
+	void addNumber(std::multimap<std::string, std::string>* person) {
+		std::cout << "Enter person's name: ";
+		std::string name;
+		std::cin >> name;
+		Number phoneNum;
+		phoneNum.write_num();
+		person->emplace(name, phoneNum.getNum());
+	}
+	void call(std::multimap<std::string, std::string>const * person){
+		std::string toFind;
+		std::cout << "Enter phone number or person's name: ";
+		std::cin >> toFind;
+		if (toFind[0] == '+') {
+			for (auto it = person->begin(); it != person->end(); ++it) {
+				if (toFind == it->second) {
+					std::cout << "You CALL " << it->first << ", phone number " << it->second;
+				}
+			}
+		}else {
+			for (auto it = person->begin(); it != person->end(); ++it) {
+				if (toFind == it->first) {
+					std::cout << "You CALL " << it->first << ", phone number " << it->second;
+				}
+			}
+		}
+	}
+	void sms (std::multimap<std::string, std::string>const* person) {
+		std::string toFind;
+		std::cout << "Enter phone number or person's name to send sms: ";
+		std::cin >> toFind;
+		if (toFind[0] == '+') {
+			for (auto it = person->begin(); it != person->end(); ++it) {
+				if (toFind == it->second) {
+					std::cout << "You can write " << it->first << ", phone number " << it->second;
+					std::string mySms;
+					std::cout << "---  sms ---\n";
+					std::getline(std::cin, mySms);
+				}
+			}
+		}
+		else {
+			for (auto it = person->begin(); it != person->end(); ++it) {
+				if (toFind == it->first) {
+					std::cout << "You can write " << it->first << ", phone number " << it->second;
+					std::string mySms;
+					std::cout << "---  sms ---\n";
+					std::getline(std::cin, mySms);
+				}
+			}
+		}
+	}
+};
+
+int main() {
+	std::multimap<std::string,std::string> friends;
+	PhoneBook myBook;
+	while (true) {
+		std::string command;
+	again:
+		std::cout << "\nEnter \"add\" , \"call\", \"sms\", \"exit\" ";
+		std::cin >> command;
+		if (command == "add") myBook.addNumber(&friends);
+		else if (command == "call") myBook.call(&friends);
+		else if (command == "sms") myBook.call(&friends);
+		else if (command == "exit") break;
+		else {
+			std::cout << "Incorrect command, try again: ";
+			goto again;
+		}
+	}
+}
